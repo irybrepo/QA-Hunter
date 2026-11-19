@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
+
 from sources.djinni import get_jobs as get_djinni_jobs
 from sources.dou import get_jobs as get_dou_jobs
 from sources.remotive import get_jobs as get_remotive_jobs
@@ -5,6 +8,9 @@ from sources.remoteok import get_jobs as get_remoteok_jobs
 from sources.jobicy import get_jobs as get_jobicy_jobs
 from sources.arbeitnow import get_jobs as get_arbeitnow_jobs
 from sources.himalayas import get_jobs as get_himalayas_jobs
+from sources.weworkremotely import get_jobs as get_weworkremotely_jobs
+from sources.workingnomads import get_jobs as get_workingnomads_jobs
+from sources.lobbyx import get_jobs as get_lobbyx_jobs
 
 from filters.qa_filter import filter_qa_jobs
 from filters.deduplicate import remove_duplicates
@@ -24,11 +30,14 @@ def main():
     sources = [
         ("Djinni", get_djinni_jobs),
         ("DOU", get_dou_jobs),
+        ("Lobby X", get_lobbyx_jobs),
         ("Remotive", get_remotive_jobs),
         ("RemoteOK", get_remoteok_jobs),
         ("Jobicy", get_jobicy_jobs),
         ("Arbeitnow", get_arbeitnow_jobs),
         ("Himalayas", get_himalayas_jobs),
+        ("We Work Remotely", get_weworkremotely_jobs),
+        ("Working Nomads", get_workingnomads_jobs),
     ]
 
     all_jobs = []
