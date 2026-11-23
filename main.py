@@ -1,3 +1,4 @@
+import os
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
 
@@ -14,6 +15,8 @@ from sources.lobbyx import get_jobs as get_lobbyx_jobs
 
 from filters.qa_filter import filter_qa_jobs
 from filters.deduplicate import remove_duplicates
+from storage.history import load_sent_urls, save_sent_urls
+from notifiers.telegram import notify_new_jobs
 
 
 def fetch_safely(source_name, fetch_func):
@@ -51,15 +54,12 @@ def main():
     print(f"Total unique jobs fetched: {len(unique_jobs)}")
     print(f"Relevant Manual QA jobs (<= 14 days, UA-friendly): {len(qa_jobs)}")
 
-    for job in qa_jobs:
-        print("=" * 60)
-        tag = "[MOBILE/MANUAL]" if job.get("is_priority") else "[QA]"
-        days = job.get("days_old")
-        age_str = f"{days}d ago" if days is not None and days != 99 else "Recent"
-        print(f"{tag} [{job.get('source')}] {job.get('title')} @ {job.get('company_name')} ({age_str})")
-        loc = job.get("location") or "Worldwide"
-        print(f"Location: {loc}")
-        print(f"Apply:    {job.get('url')}")
+    bot_token = os.getenv("TG_BOT_TOKEN", "").strip()
+    chat_id = os.getenv("TG_CHAT_ID", "").strip()
+
+    sent_urls = load_sent_urls()
+    updated_urls = notify_new_jobs(qa_jobs, bot_token, chat_id, sent_urls)
+    save_sent_urls(updated_urls)
 
 
 if __name__ == "__main__":
